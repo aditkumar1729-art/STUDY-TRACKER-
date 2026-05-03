@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Study Tracker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 200px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    li {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🔥 Stay Consistent</h1>
+  <h3 id="date"></h3>
+
+  <input id="goalInput" placeholder="Study goal...">
+  <button onclick="addGoal()">Add</button>
+
+  <h2>Completed: <span id="count">0</span></h2>
+
+  <ul id="list"></ul>
+
+<script>
+  let goals = JSON.parse(localStorage.getItem("goals")) || [];
+
+  document.getElementById("date").innerText =
+    new Date().toDateString();
+
+  function save() {
+    localStorage.setItem("goals", JSON.stringify(goals));
+  }
+
+  function render() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    let completed = 0;
+
+    goals.forEach((g, i) => {
+      if (g.done) completed++;
+
+      list.innerHTML += `
+        <li>
+          <span style="text-decoration:${g.done?'line-through':'none'}">
+            ${g.text}
+          </span>
+          <button onclick="toggle(${i})">✔</button>
+          <button onclick="del(${i})">❌</button>
+        </li>
+      `;
+    });
+
+    document.getElementById("count").innerText = completed;
+  }
+
+  function addGoal() {
+    let input = document.getElementById("goalInput");
+    if (!input.value) return;
+
+    goals.push({ text: input.value, done: false });
+    input.value = "";
+
+    save();
+    render();
+  }
+
+  function toggle(i) {
+    goals[i].done = !goals[i].done;
+    save();
+    render();
+  }
+
+  function del(i) {
+    goals.splice(i, 1);
+    save();
+    render();
+  }
+
+  render();
+</script>
+
+</body>
+</html>
